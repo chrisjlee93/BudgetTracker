@@ -1,1 +1,17 @@
-spring.application.name=budget
+spring:
+  application:
+    name:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5436/budget
+    username: budget
+    password: tracker
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
