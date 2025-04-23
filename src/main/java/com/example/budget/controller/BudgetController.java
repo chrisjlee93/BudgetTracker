@@ -29,6 +29,14 @@ public class BudgetController {
         return ResponseEntity.ok(budgetService.findAllItems());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BudgetItem> getItemById(@PathVariable Long id) { return ResponseEntity.ok(budgetService.findItemById(id)); }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+        budgetService.deleteItem(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 
