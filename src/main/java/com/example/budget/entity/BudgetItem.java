@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "budget_items")
-public class BudgetItems {
+public class BudgetItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,13 +17,13 @@ public class BudgetItems {
     private Double amount;
     private Integer percent;
 
-    public BudgetItems(String category, Double amount) {
+    public BudgetItem(String category, Double amount) {
         this.category = category;
         this.amount = amount;
         this.created = Instant.now();
     }
 
-    public BudgetItems() {}
+    public BudgetItem() {}
 
     public Long getId() {
         return id;

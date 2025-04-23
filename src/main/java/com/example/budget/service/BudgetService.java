@@ -2,9 +2,11 @@ package com.example.budget.service;
 
 import com.example.budget.entity.BudgetItem;
 import com.example.budget.repository.BudgetRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
