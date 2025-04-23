@@ -3,7 +3,6 @@ package com.example.budget.entity;
 
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.time.Instant;
 
 @Entity
@@ -18,12 +17,10 @@ public class BudgetItems {
     private Double amount;
     private Integer percent;
 
-    public BudgetItems(Long id, String category, Instant created, Double amount, Integer percent) {
-        this.id = id;
+    public BudgetItems(String category, Double amount) {
         this.category = category;
-        this.created = created;
         this.amount = amount;
-        this.percent = percent;
+        this.created = Instant.now();
     }
 
     public BudgetItems() {}
