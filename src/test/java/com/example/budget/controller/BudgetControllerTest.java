@@ -54,12 +54,12 @@ public class BudgetControllerTest {
                 .andExpect(jsonPath("$.category").value("Rent"));
     }
 
-//    @Test
-//    void canGetAllItems() throws Exception {
-//        when(budgetService.findAllItems()).thenReturn(List.of(item));
-//        mockMvc.perform(get("/api/budget"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.length()").value(1));
-//    }
+    @Test
+    void canGetAllItems() throws Exception {
+        when(budgetService.findAllItems()).thenReturn(List.of(item));
+        mockMvc.perform(get("/api/budget"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+    }
 
 }

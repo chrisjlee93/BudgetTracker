@@ -24,10 +24,12 @@ public class BudgetController {
         return new ResponseEntity<>(budgetService.createBudgetItem(item), HttpStatus.CREATED);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<BudgetItem>> getAllItems() {
-//
-//    }
+    @GetMapping
+    public ResponseEntity<List<BudgetItem>> getAllItems() {
+        return ResponseEntity.ok(budgetService.findAllItems());
+    }
+
+
 
 
 }
