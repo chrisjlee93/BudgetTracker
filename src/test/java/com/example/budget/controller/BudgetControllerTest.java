@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 //import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
@@ -75,6 +76,18 @@ public class BudgetControllerTest {
         mockMvc.perform(delete("/api/budget/1"))
                 .andExpect(status().isNoContent());
         verify(budgetService).deleteItem(1L);
+    }
+
+    @Test
+    void shouldUpdateItem() throws Exception {
+        BudgetItem updated = new BudgetItem("new Rent", 1500.00);
+        when(budgetService.updateItem(eq(1L), any(BudgetItem.class))).thenReturn(updated);
+        mockMvc.perform(put("/api/budget/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.category").value("new Rent"))
+                .andExpect(jsonPath("$.amount").value(1500.00));
     }
 
 }

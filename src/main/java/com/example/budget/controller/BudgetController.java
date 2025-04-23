@@ -38,6 +38,9 @@ public class BudgetController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<BudgetItem> updateItem(@PathVariable Long id, @RequestBody BudgetItem updatedItem) { return ResponseEntity.ok(budgetService.updateItem(id,updatedItem)); }
+
 
 
 }
