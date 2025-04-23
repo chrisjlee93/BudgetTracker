@@ -49,6 +49,11 @@ public class BudgetItem {
         this.created = created;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        this.created = Instant.now();
+    }
+
     public Double getAmount() {
         return amount;
     }
