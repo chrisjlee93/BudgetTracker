@@ -1,19 +1,33 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import BudgetTable from "./BudgetTable.tsx";
+import {BudgetItem} from "../types.ts";
+import {createBudgetItem, fetchBudgetItems} from "./Budget-service.ts";
+import BudgetTotal from "./BudgetTotal.tsx";
 
 const Budget = () => {
 
     const initialState = {
-        // budget: '',
         category: '',
-        budgetPercent: '',
+        budgetAmount: '',
     }
 
 
     const [formData, setFormData] = useState(initialState)
     const [budget, setBudget] = useState('')
-    const {category, budgetPercent} = formData
+    const {category, budgetAmount} = formData
     const [totalBudget, setTotalBudget] = useState('')
-    const [categories,setCategories] = useState<{category:string; budgetPercent: string}[]>([])
+    const [budgetItems,setBudgetItems] = useState<BudgetItem[]>([])
+    const [refresh, setRefresh] = useState(false);
+
+    const fetchBudget = () => {
+        fetchBudgetItems()
+            .then(setBudgetItems)
+            .catch(err => console.error("failed", err))
+    }
+
+    useEffect(() => {
+        fetchBudget()
+    }, [refresh]);
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -24,13 +38,22 @@ const Budget = () => {
         }
         }
 
-    const handleSubmit2 = (e) => {
+    const handleSubmit2 = async (e) => {
         e.preventDefault()
         console.log("in submit2")
-        if (category && budgetPercent) {
-            setCategories([...categories, {category,budgetPercent}])
-            setFormData(initialState)
+        if (category && budgetAmount && Number(budgetAmount)>0) {
+            let newItem: BudgetItem = {category:category, amount: budgetAmount, percentage: ''}
+            try {
+                await createBudgetItem(newItem);
+                setBudgetItems([...budgetItems, newItem])
+                setFormData(initialState)
+                setRefresh(!refresh)
+            } catch (err) {
+                console.log("Failed", err)
+            }
         }
+        else
+            console.log("Invalid Values")
         }
 
     const handleBudget = (e) => {
@@ -45,12 +68,15 @@ const Budget = () => {
                 [e.target.name]:e.target.value})
     }
 
+
+
     return (
         <>
             <h1>budget page</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
+            <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+                <div >
                     <input
+                        className="block py-2.5 px-0 w-full text-sm mb-2.5 text-gray-900 bg-transparent border-0 border-b-2 "
                         type= 'number'
                         role={'form'}
                         placeholder={'Enter Total Budget'}
@@ -58,12 +84,17 @@ const Budget = () => {
                         value={budget}
                         onChange={handleBudget}
                     />
-                    <button type={"submit"} aria-label={'submit button'}>Confirm Total Budget</button>
+                    <button
+                        className="py-2.5 px-5 me-2  my-2.5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        type={"submit"}
+                        aria-label={'submit button'}
+                    >Confirm Total Budget</button>
                 </div>
             </form>
-            <form onSubmit={handleSubmit2}>
+            <form onSubmit={handleSubmit2} className="max-w-md mx-auto">
                 <div>
                     <input
+                        className="block py-2.5 px-0 mb-2.5 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2"
                         type= 'text'
                         role={'form'}
                         placeholder={'Category to Budget'}
@@ -72,24 +103,31 @@ const Budget = () => {
                         onChange={handleChange}
                     />
                     <input
+                        className="block py-2.5 px-0 mb-2.5 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 "
                         type= 'number'
                         role={'form'}
-                        placeholder={'% of Total Budget'}
-                        name={'budgetPercent'}
-                        value={budgetPercent}
+                        placeholder={'Amount to Budget'}
+                        name={'budgetAmount'}
+                        value={budgetAmount}
                         onChange={handleChange}
                     />
-                    <button type={"submit"} aria-label={'category submit button'}>Confirm New Item Budget</button>
+                    <button
+                        className="py-2.5 px-5 me-2  my-2.5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        type={"submit"}
+                        aria-label={'category submit button'}
+                    >Confirm New Item Budget</button>
                 </div>
             </form>
-            <p>Total Budget: {totalBudget}</p>
-            <ul>
-                {categories.map((item, index) =>(
-                    <li key = {index}>
-                        {item.category} -  {String(parseFloat(totalBudget)*parseFloat(item.budgetPercent)/100)}
-                        </li>
-                    ))}
-            </ul>
+
+
+            {budgetItems.length === 0 ? (
+                <p>Loading...</p>
+            ) : (
+                <>
+                    <BudgetTotal totalBudget={budgetItems[0].amount} items={budgetItems} />
+                    <BudgetTable totalBudget={budgetItems[0].amount} items={budgetItems} />
+                </>
+            )}
         </>
     )
 }
