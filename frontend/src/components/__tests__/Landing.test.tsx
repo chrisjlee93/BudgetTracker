@@ -17,17 +17,18 @@ describe('Landing Page', () => {
             expect( screen.getByRole("heading", { name: /budget/i })).toBeVisible()
     })
 
-    it("should navigate to the Budget page when link is clicked", async () => {
-        render(
-            <MemoryRouter initialEntries={["/"]}>
-                <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/budget" element={<Budget />} />
-                </Routes>
-            </MemoryRouter>
-        );
-        await userEvent.click(screen.getByLabelText(/budget/i))
-        expect( screen.getByRole("heading", { name: /budget page/i })).toBeVisible()
-    })
+    // Moved my links into the App.tsx so this test is irrelevant
+    // it("should navigate to the Budget page when link is clicked", async () => {
+    //     render(
+    //         <MemoryRouter initialEntries={["/"]}>
+    //             <Routes>
+    //                 <Route path="/" element={<LandingPage />} />
+    //                 <Route path="/budget" element={<Budget />} />
+    //             </Routes>
+    //         </MemoryRouter>
+    //     );
+    //     await userEvent.click(screen.getByLabelText(/budget/i))
+    //     expect( screen.getByRole("heading", { name: /budget page/i })).toBeVisible()
+    // })
 })
 

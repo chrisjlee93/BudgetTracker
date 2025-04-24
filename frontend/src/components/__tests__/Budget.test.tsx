@@ -26,12 +26,12 @@ describe('Budget Page', () =>{
 
     it('should see a form with input values for budgeting and display on submit', async () => {
 
-        const budgetInput = screen.getByPlaceholderText(/enter total * /i)
+        const budgetInput = screen.getByPlaceholderText(/enter total budget/i)
         const budgetButton = screen.getByLabelText('submit button')
         const totalBudget = 5000
 
         expect( screen.getByPlaceholderText(/enter total budget/i)).toBeVisible()
-        expect( screen.getByPlaceholderText(/of total*/i)).toBeVisible()
+        expect( screen.getByPlaceholderText(/amount to*/i)).toBeVisible()
         await userEvent.type(budgetInput,String(totalBudget));
         await userEvent.click(budgetButton)
         expect( screen.findByText(String({totalBudget})))
@@ -56,7 +56,20 @@ describe('Budget Page', () =>{
     })
 
     it('should not let set up more than 100% of Budget', async  () => {
-        render(<Budget/>)
+
+        const catInput = screen.getAllByRole('form')[0]
+        const category = 'Rent'
+        const budgetInput = screen.getByPlaceholderText(/enter total * /i)
+        const budgetButton = screen.getByLabelText('submit button')
+        const totalBudget = 5000
+
+        await userEvent.type(budgetInput,String(totalBudget));
+        await userEvent.click(budgetButton)
+        await userEvent.type(catInput,category)
+        await userEvent.type(screen.getAllByRole('form')[1],String(100))
+
+
+
 
     })
 

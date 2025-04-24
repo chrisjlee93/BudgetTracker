@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import BudgetTable from "./BudgetTable.tsx";
 import {BudgetItem} from "../types.ts";
-import {createBudgetItem, fetchBudgetItems} from "./Budget-service.ts";
+import {createBudgetItem, fetchBudgetItemById, fetchBudgetItems, updateBudgetItem} from "./Budget-service.ts";
 import BudgetTotal from "./BudgetTotal.tsx";
 
 const Budget = () => {
@@ -15,7 +15,7 @@ const Budget = () => {
     const [formData, setFormData] = useState(initialState)
     const [budget, setBudget] = useState('')
     const {category, budgetAmount} = formData
-    const [totalBudget, setTotalBudget] = useState('')
+    const [item, setItem] = useState<BudgetItem | null>(null)
     const [budgetItems,setBudgetItems] = useState<BudgetItem[]>([])
     const [refresh, setRefresh] = useState(false);
 
@@ -26,14 +26,31 @@ const Budget = () => {
     }
 
     useEffect(() => {
+        fetchBudgetItemById({id: 1}).then(setItem);
         fetchBudget()
     }, [refresh]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         console.log("in submit")
         if (budget) {
-            setTotalBudget(budget)
+            let newItem:BudgetItem = {id: 1, amount: budget, percentage: '100', category: 'Total'}
+            if (budgetItems) {
+                try {
+                await updateBudgetItem(newItem);
+                setRefresh(prev => !prev)
+                } catch (err) {
+                    console.log("Failed", err)
+                }
+            }
+            else if (!budgetItems) {
+                try {
+                    await createBudgetItem(newItem)
+                    setRefresh(prev => !prev)
+                } catch (err) {
+                    console.log("Failed", err)
+                }
+            }
             setBudget('')
         }
         }
@@ -42,10 +59,10 @@ const Budget = () => {
         e.preventDefault()
         console.log("in submit2")
         if (category && budgetAmount && Number(budgetAmount)>0) {
-            let newItem: BudgetItem = {category:category, amount: budgetAmount, percentage: ''}
+            // you can omit a prop to let the backend handle it
+            let newItem: Omit<BudgetItem, 'id'> = {category, amount: budgetAmount, percentage: ''}
             try {
                 await createBudgetItem(newItem);
-                setBudgetItems([...budgetItems, newItem])
                 setFormData(initialState)
                 setRefresh(!refresh)
             } catch (err) {
@@ -124,8 +141,15 @@ const Budget = () => {
                 <p>Loading...</p>
             ) : (
                 <>
-                    <BudgetTotal totalBudget={budgetItems[0].amount} items={budgetItems} />
-                    <BudgetTable totalBudget={budgetItems[0].amount} items={budgetItems} />
+                    <BudgetTotal
+                        items={budgetItems}
+                        item={item}
+                    />
+                    <BudgetTable
+                        items={budgetItems}
+                        onDeleteSuccess={() => setRefresh(prev => !prev)}
+                        item={item}
+                    />
                 </>
             )}
         </>
